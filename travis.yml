@@ -1,5 +1,5 @@
 language: node_js
 node_js:
 - 8.4.0
-script: NODE_ENV=test mocha --recursive
+script: NODE_ENV=test istanbul cover _mocha -- --recursive
 after_script: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
