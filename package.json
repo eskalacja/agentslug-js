@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --recursive",
-    "cover": "NODE_ENV=test istanbul cover _mocha -- --recursive"
+    "coverage": "NODE_ENV=test istanbul cover _mocha -- --recursive"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",
-    "istanbul": "^0.4.5"
+    "istanbul": "^0.4.5",
+    "mocha": "^5.0.0"
   }
 }
