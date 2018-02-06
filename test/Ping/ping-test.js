@@ -8,11 +8,17 @@ const sinon = require('sinon');
 describe('Ping', () => {
   let Ping;
   const postSpy = sinon.spy();
+  const setSpy = sinon.spy();
   let endCb = () => {};
   before(() => {
     mock('superagent', (function() {
       this.post = (...args) => {
         postSpy(...args);
+        return this;
+      };
+
+      this.set = (...args) => {
+        setSpy(...args);
         return this;
       };
 
@@ -42,6 +48,8 @@ describe('Ping', () => {
           const pathShould = 'https://api.agentslug.com/ping/2/heartbeat';
           const pathIs = postSpy.getCall(0).args[0];
           assert(pathIs === pathShould, `Url is not ${pathShould}, is ${pathIs}`);
+          assert(setSpy.getCall(0).args[0] === 'Authorization');
+          assert(setSpy.getCall(0).args[1] === `Bearer foo`);
           done();
         })
         .catch(err => {

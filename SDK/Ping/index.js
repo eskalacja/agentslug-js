@@ -10,6 +10,7 @@ class Ping extends SDKClient {
       }
       superagent
         .post(this.getApiUrl(`ping/${pingID}/heartbeat`))
+        .set('Authorization', `Bearer ${this.token}`)
         .end((err) => {
           if (err) {
             reject(err);
