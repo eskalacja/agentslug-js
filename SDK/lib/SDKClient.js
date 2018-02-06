@@ -4,10 +4,11 @@ const { AGENTSLUG_API } = require('./constants');
  * Responsible for handling credentials and shared logic.
  */
 class SDKClient {
-  static getApiUrl(path) {
-    return `${AGENTSLUG_API}/${path}`;
+  getApiUrl(path) {
+    return `${this.apiUrl}/${path}`;
   }
-  constructor({ token }) {
+  constructor({ token, apiUrl = AGENTSLUG_API }) {
+    this.apiUrl = apiUrl;
     this.token = token;
   }
 }

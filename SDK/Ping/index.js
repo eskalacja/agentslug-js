@@ -9,7 +9,7 @@ class Ping extends SDKClient {
         return;
       }
       superagent
-        .post(this.constructor.getApiUrl(`ping/${pingID}/heartbeat`))
+        .post(this.getApiUrl(`ping/${pingID}/heartbeat`))
         .end((err) => {
           if (err) {
             reject(err);
