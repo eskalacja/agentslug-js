@@ -1,3 +1,4 @@
+const superagent = require('superagent');
 const { AGENTSLUG_API } = require('./constants');
 /**
  * Client main class.
@@ -10,6 +11,21 @@ class SDKClient {
   constructor({ token, apiUrl = AGENTSLUG_API }) {
     this.apiUrl = apiUrl;
     this.token = token;
+  }
+
+  sendPost({ path }) {
+    return new Promise((resolve, reject) => {
+      superagent
+        .post(this.getApiUrl(path))
+        .set('Authorization', `Bearer ${this.token}`)
+        .end((err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        })
+    });
   }
 }
 

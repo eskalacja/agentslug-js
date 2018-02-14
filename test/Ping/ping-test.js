@@ -7,10 +7,16 @@ const sinon = require('sinon');
  */
 describe('Ping', () => {
   let Ping;
+  const mockedApiUrl = 'https://example.com';
+  const mockedThrottle = 5;
   const postSpy = sinon.spy();
   const setSpy = sinon.spy();
   let endCb = () => {};
   before(() => {
+    mock('../../SDK/lib/constants', {
+      AGENTSLUG_API: mockedApiUrl,
+      PING_THROTTLE: mockedThrottle,
+    });
     mock('superagent', (function() {
       this.post = (...args) => {
         postSpy(...args);
@@ -32,6 +38,9 @@ describe('Ping', () => {
   after(() => {
     mock.stop('superagent');
   });
+  afterEach(() => {
+    postSpy.resetHistory();
+  });
 
   let ping;
   it('should instantiate an object with token property', () => {
@@ -45,12 +54,14 @@ describe('Ping', () => {
       };
       ping.send(2)
         .then(() => {
-          const pathShould = 'https://api.agentslug.com/ping/2/heartbeat';
-          const pathIs = postSpy.getCall(0).args[0];
-          assert(pathIs === pathShould, `Url is not ${pathShould}, is ${pathIs}`);
-          assert(setSpy.getCall(0).args[0] === 'Authorization');
-          assert(setSpy.getCall(0).args[1] === `Bearer foo`);
-          done();
+          setTimeout(() => {
+            const pathShould = `${mockedApiUrl}/ping/2/heartbeat`;
+            const pathIs = postSpy.getCall(0).args[0];
+            assert(pathIs === pathShould, `Url is not ${pathShould}, is ${pathIs}`);
+            assert(setSpy.getCall(0).args[0] === 'Authorization');
+            assert(setSpy.getCall(0).args[1] === `Bearer foo`);
+            done();
+          }, mockedThrottle);
         })
         .catch(err => {
           assert(false, 'Ping resolved with error.');
@@ -62,7 +73,7 @@ describe('Ping', () => {
       endCb = (cb) => {
         return cb(thrownErr);
       };
-      ping.send(2)
+      ping.sendPost('/foo')
         .then(() => {
           assert(false, 'Did not reject');
           done();
@@ -83,5 +94,27 @@ describe('Ping', () => {
           done();
         })
     });
-  })
+    it('should throttle POST message', (done) => {
+      endCb = (cb) => {
+        return cb();
+      };
+      Promise.all(new Array(10).fill('').map(() => { return ping.send(2)}))
+        .then((t) => {
+          setTimeout(() => {
+            assert(postSpy.getCalls().length === 1, 'Did not throttle first 10');
+            ping.send(2)
+              .then(() => {
+                setTimeout(() => {
+                  assert(postSpy.getCalls().length === 2, 'After throttle calls count is wrong');
+                  done();
+                }, mockedThrottle);
+              });
+          }, mockedThrottle);
+        })
+        .catch(err => {
+          assert(false, 'Ping resolved with error');
+          done();
+        });
+    });
+  });
 });

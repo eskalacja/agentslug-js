@@ -1,5 +1,13 @@
-const superagent = require('superagent');
 const SDKClient = require('../lib/SDKClient');
+const { PING_THROTTLE } = require('../lib/constants');
+
+const throttleByPingID = {};
+
+const clearThrottle = (pingID) => {
+  if (throttleByPingID[pingID]) {
+    clearTimeout(throttleByPingID[pingID]);
+  }
+};
 
 class Ping extends SDKClient {
   send(pingID) {
@@ -8,16 +16,15 @@ class Ping extends SDKClient {
         reject(new Error('Invalid pingID. Ping ID must be a number.'));
         return;
       }
-      superagent
-        .post(this.getApiUrl(`ping/${pingID}/heartbeat`))
-        .set('Authorization', `Bearer ${this.token}`)
-        .end((err) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve();
+      clearThrottle(pingID);
+      throttleByPingID[pingID] = setTimeout(() => {
+        this.sendPost({
+          path: `ping/${pingID}/heartbeat`
         })
+          .then(() => {})
+          .catch(() => {})
+      }, PING_THROTTLE);
+      resolve();
     });
   }
 }
