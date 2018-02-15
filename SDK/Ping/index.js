@@ -6,7 +6,7 @@ const throttle = new Throttle(PING_THROTTLE);
 
 class Ping extends SDKClient {
   send(pingID) {
-    if (!pingID || pingID < 1) {
+    if (!pingID || typeof pingID !== 'number' || pingID < 1) {
       this.emit('error', new Error('Invalid pingID. Ping ID must be a number.'));
       return;
     }

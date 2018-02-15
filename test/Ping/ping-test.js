@@ -67,7 +67,7 @@ describe('Ping', () => {
       endCb = (cb) => {
         return cb(thrownErr);
       };
-      ping.send('/foo');
+      ping.send(2);
       ping.once('error', (err) => {
         assert(err === thrownErr, 'Error is not correct.');
         done();
@@ -76,9 +76,10 @@ describe('Ping', () => {
     it('should emit error when invalid id is given', (done) => {
       ping.once('error', (err) => {
         assert(err instanceof Error, 'Error is not instance of Error.');
+        assert(err.message === 'Invalid pingID. Ping ID must be a number.', 'Wrong error message');
         done();
       });
-      ping.send(2)
+      ping.send('foo')
     });
     it('should throttle POST message', (done) => {
       endCb = (cb) => {
