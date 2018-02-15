@@ -11,21 +11,22 @@ const clearThrottle = (pingID) => {
 
 class Ping extends SDKClient {
   send(pingID) {
-    return new Promise((resolve, reject) => {
-      if (!pingID || pingID < 1) {
-        reject(new Error('Invalid pingID. Ping ID must be a number.'));
-        return;
-      }
-      clearThrottle(pingID);
-      throttleByPingID[pingID] = setTimeout(() => {
-        this.sendPost({
-          path: `ping/${pingID}/heartbeat`
+    if (!pingID || pingID < 1) {
+      this.emit('error', new Error('Invalid pingID. Ping ID must be a number.'));
+      return;
+    }
+    clearThrottle(pingID);
+    throttleByPingID[pingID] = setTimeout(() => {
+      this.sendPost({
+        path: `ping/${pingID}/heartbeat`
+      })
+        .then(() => {
+          this.emit('sent');
         })
-          .then(() => {})
-          .catch(() => {})
-      }, PING_THROTTLE);
-      resolve();
-    });
+        .catch((err) => {
+          this.emit('error', err);
+        })
+    }, PING_THROTTLE);
   }
 }
 
