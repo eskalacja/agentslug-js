@@ -53,14 +53,14 @@ describe('Ping', () => {
         return cb();
       };
       ping.once('sent', () => {
-        const pathShould = `${mockedApiUrl}/ping/2/heartbeat`;
+        const pathShould = `${mockedApiUrl}/ping/1/heartbeat`;
         const pathIs = postSpy.getCall(0).args[0];
         assert(pathIs === pathShould, `Url is not ${pathShould}, is ${pathIs}`);
         assert(setSpy.getCall(0).args[0] === 'Authorization');
         assert(setSpy.getCall(0).args[1] === `Bearer foo`);
         done();
       });
-      ping.send(2);
+      ping.send(1);
     });
     it('should emit error', (done) => {
       const thrownErr = new Error('foo');
@@ -78,21 +78,22 @@ describe('Ping', () => {
         assert(err instanceof Error, 'Error is not instance of Error.');
         done();
       });
-      ping.send(0)
+      ping.send(2)
     });
     it('should throttle POST message', (done) => {
       endCb = (cb) => {
         return cb();
       };
-      new Array(10).fill('').map(() => { return ping.send(2)});
+      new Array(10).fill('').map(() => { return ping.send(3)});
       setTimeout(() => {
         assert(postSpy.getCalls().length === 1, 'Did not throttle first 10');
-        ping.send(2);
         setTimeout(() => {
+          ping.send(3);
           assert(postSpy.getCalls().length === 2, 'After throttle calls count is wrong');
           done();
         }, mockedThrottle);
-      }, mockedThrottle);
+      }, 0);
+
     });
   });
 });

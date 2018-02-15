@@ -1,13 +1,8 @@
 const SDKClient = require('../lib/SDKClient');
 const { PING_THROTTLE } = require('../lib/constants');
+const Throttle = require('../lib/Throttle');
 
-const throttleByPingID = {};
-
-const clearThrottle = (pingID) => {
-  if (throttleByPingID[pingID]) {
-    clearTimeout(throttleByPingID[pingID]);
-  }
-};
+const throttle = new Throttle(PING_THROTTLE);
 
 class Ping extends SDKClient {
   send(pingID) {
@@ -15,18 +10,19 @@ class Ping extends SDKClient {
       this.emit('error', new Error('Invalid pingID. Ping ID must be a number.'));
       return;
     }
-    clearThrottle(pingID);
-    throttleByPingID[pingID] = setTimeout(() => {
-      this.sendPost({
-        path: `ping/${pingID}/heartbeat`
+    if (throttle.shouldThrottle(pingID)) {
+      return;
+    }
+    throttle.did(pingID);
+    this.sendPost({
+      path: `ping/${pingID}/heartbeat`
+    })
+      .then(() => {
+        this.emit('sent');
       })
-        .then(() => {
-          this.emit('sent');
-        })
-        .catch((err) => {
-          this.emit('error', err);
-        })
-    }, PING_THROTTLE);
+      .catch((err) => {
+        this.emit('error', err);
+      })
   }
 }
 
