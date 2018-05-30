@@ -5,6 +5,11 @@ const Throttle = require('../lib/Throttle');
 const throttle = new Throttle(PING_THROTTLE);
 
 class Ping extends SDKClient {
+  /**
+   * Sending the ping to API.
+   * @param {number} pingID Ping Id taken from AgentSlug.com.
+   * @return {undefined} Returns nothing, fire and forget.
+   */
   send(pingID) {
     if (!pingID || typeof pingID !== 'number' || pingID < 1) {
       this.emit('error', new Error('Invalid pingID. Ping ID must be a number.'));
