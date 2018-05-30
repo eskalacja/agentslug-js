@@ -1,6 +1,7 @@
 const { assert } = require('chai');
 const mock = require('mock-require');
 const sinon = require('sinon');
+const decache = require('decache');
 
 /**
  * Dirty tests for now.
@@ -13,7 +14,8 @@ describe('Ping', () => {
   const setSpy = sinon.spy();
   let endCb = () => {};
   before(() => {
-    mock('../../SDK/lib/constants', {
+    decache('../../../SDK/Ping/index');
+    mock('../../../SDK/lib/constants', {
       AGENTSLUG_API: mockedApiUrl,
       PING_THROTTLE: mockedThrottle,
     });
@@ -33,7 +35,7 @@ describe('Ping', () => {
       };
       return this;
     })());
-    Ping = require('../../SDK/Ping/index');
+    Ping = require('../../../SDK/Ping/index');
   });
   after(() => {
     mock.stopAll();

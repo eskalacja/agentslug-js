@@ -17,11 +17,14 @@ This software is intended to be used only for registered AgentSlug.com users. In
 ### Simplest usage for a single function monitoring.
 ```js
 // Importing Ping
-const { Ping } = 'agentslug-node';
+const { Ping } = require('agentslug');
+// or:
+// const Ping = require('agentslug/Ping');
 
 const API_TOKEN = '[YOUR_API_TOKEN]';
 const PING_ID = '[PING_ID_TAKEN_FROM_AGENTSLUG.COM]';
 const pingInstance = new Ping({token: API_TOKEN});
+
 // Important function that needs to be monitored.
 function somethingImportant() {
   // Doing something important.
@@ -34,5 +37,64 @@ function somethingImportant() {
 // Example interval for the function.
 setInterval(() => somethingImportant, 5000);
 ```
+### Singleton use case for bigger applications with multiple ping configurations
+For bigger applications you might want to use our singleton helper to register the Ping client once and use it anywhere.
+```js
+// init.js or bootstrap.js, whatever runs first in your app
+const { initSingleton } = require('agentslug/Ping/singleton');
+const API_TOKEN = '[YOUR_API_TOKEN]';
+// init a singleton Ping, since next line, every `getSingleton` would return same instance of Ping API Client.
+initSingleton({ token: API_TOKEN })
+```
+```js
+// someFunction.js
+const { getSingleton } = require('agentslug/Ping/singleton');
+const PING_ID = '[PING_ID_TAKEN_FROM_AGENTSLUG.COM_FOR_SOME_FUNCTION]';
+// Ping is an instance of previously created Ping.
+const ping = getSingleton();
+// do something important
+ping.send(PING_ID);
+```
+```js
+// otherFunction.js
+const { getSingleton } = require('agentslug/Ping/singleton');
+const PING_ID = '[PING_ID_TAKEN_FROM_AGENTSLUG.COM_FOR_OTHER_FUNCTION]';
+// Ping is an instance of previously created Ping.
+const ping = getSingleton();
+// do something important
+ping.send(PING_ID);
+```
 
- 
+## Success / error handling
+### Fire and forget
+All `Ping.send` functions schedule a http request to AgentSlug.com API, and immediately return to not block current operation. This way your application monitoring should not have much impact on the appliction performance.
+
+Because of that, errors and successes are handled within events.
+
+### Possible events
+#### `sent`
+Emitted on `Ping` instance when ping was successfully sent. Keep in mind not all `Ping.send` executions would end up in `sent` event because of [throttling](#throttling)
+#### `error`
+Emitted on `Ping` instance on error. Usually it catches networking errors, e.x. if our API is down, you should expect many logs from this handler.
+
+#### Example usage
+```js
+const { Ping } = require('agentslug');
+
+const ping = new Ping({ token: 'TOKEN'});
+
+ping.on('error', (err) => {
+  logger.error('Ping error', err);
+});
+pingInstance.on('sent', () => {
+  logger.info('Ping sent');
+});
+```
+### Throttling
+It's expected that `Ping` client is used in functions which are executed very often. Of course, you should not flood the API with too many requests - that would lead to ban of the client IP.
+
+This SDK is however safe to use since it implements internal throttling.
+
+Whenever `Ping.sent` is called, internal throttling mechanism checks if it's safe to send an http requests to the API or if this call should be skipped.
+
+To be exact, very first `Ping.sent` call always results with http request and all consecutive calls executed in next 20 seconds would be ignored.

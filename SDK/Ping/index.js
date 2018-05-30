@@ -6,7 +6,7 @@ const throttle = new Throttle(PING_THROTTLE);
 
 class Ping extends SDKClient {
   /**
-   * Sending the ping to API.
+   * Sends ping to API.
    * @param {number} pingID Ping Id taken from AgentSlug.com.
    * @return {undefined} Returns nothing, fire and forget.
    */
