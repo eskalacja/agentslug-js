@@ -1,5 +1,5 @@
 {
-  "name": "agentslug-node",
+  "name": "agentslug",
   "version": "0.6.0",
   "description": "AgentSlug.com node SDK",
   "main": "index.js",
@@ -15,7 +15,8 @@
     "agentslug",
     "uptime",
     "monitoring",
-    "sdk"
+    "sdk",
+    "client"
   ],
   "author": "Eskalacja",
   "license": "MIT",
