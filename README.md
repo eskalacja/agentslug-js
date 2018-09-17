@@ -2,8 +2,6 @@
 [![Build Status](https://travis-ci.org/eskalacja/agentslug-node.svg?branch=master)](https://travis-ci.org/eskalacja/agentslug-node)
 [![Coverage Status](https://coveralls.io/repos/github/eskalacja/agentslug-node/badge.svg?branch=master)](https://coveralls.io/github/eskalacja/agentslug-node?branch=master)
 [![npm version](https://badge.fury.io/js/agentslug.svg)](https://badge.fury.io/js/agentslug)
-## Important - this is an alpha version, this readme is a draft as well
-If you'd like to use this piece of software, please keep in mind this is an alpha version, `Ping` API still might be changed.
 ## What is it?
 This package is the client SDK for AgentSlug.com services. Currently it supports `Ping` which is a client for AgentSlug.com application uptime monitoring.
 
