@@ -1,6 +1,6 @@
 {
   "name": "agentslug",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "AgentSlug.com node SDK",
   "main": "index.js",
   "scripts": {
