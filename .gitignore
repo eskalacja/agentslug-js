@@ -60,3 +60,6 @@ typings/
 #.idea
 .idea
 
+# local
+test-local.js
+
