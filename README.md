@@ -80,9 +80,9 @@ Emitted on `Ping` instance on error. Usually it catches networking errors, e.x. 
 ```js
 const { Ping } = require('agentslug');
 
-const ping = new Ping({ token: 'TOKEN'});
+const pingInstance = new Ping({ token: 'TOKEN'});
 
-ping.on('error', (err) => {
+pingInstance.on('error', (err) => {
   logger.error('Ping error', err);
 });
 pingInstance.on('sent', () => {
