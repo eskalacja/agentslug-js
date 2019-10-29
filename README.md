@@ -1,5 +1,5 @@
 # AgentSlug.com node SDK
-[![Build Status](https://travis-ci.org/eskalacja/agentslug-node.svg?branch=master)](https://travis-ci.org/eskalacja/agentslug-node)
+[![Build Status](https://travis-ci.org/eskalacja/agentslug-js.svg?branch=master)](https://travis-ci.org/eskalacja/agentslug-js)
 [![Coverage Status](https://coveralls.io/repos/github/eskalacja/agentslug-node/badge.svg?branch=master)](https://coveralls.io/github/eskalacja/agentslug-node?branch=master)
 [![npm version](https://badge.fury.io/js/agentslug.svg)](https://badge.fury.io/js/agentslug)
 ## What is it?
